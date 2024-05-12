@@ -2,7 +2,7 @@
 .data 
 	arreglo: .word 20, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
 	contador: .word 0
-	tamaño_arreglo: .word 20
+	tamano_arreglo: .e 20
 	print_resultado: .asciiz "El valor maximo en el  arreglo es: "
 	print_posicion: .asciiz "La posicicion del valor maximo es: "
 	print_arreglo: .asciiz "El arreglo utilizado es el siguiente: "
@@ -15,13 +15,13 @@
 	la $t1, arreglo
 	lw $s1, arreglo
 	lw $s2, contador
-	lw $t2, tamaño_arreglo
+	lw $t2, tamano_arreglo
 	li $t4, 0
 	encontrar:
 	
 	sll $s3, $s2, 2 #Se multiplica el contador por 4.
-	add $s4, $t1, $s3 #Sumo el contador a la dirección del arreglo (es como hacer A[contador])
-	lw $s5, ($s4)#Cargo el valor de A[contador] en s5.
+	 #Sumo el contador a la dirección del arreglo (es como hacer A[contador])
+	lw $s5, 0($s4)#Cargo el valor de A[contador] en s5.
 	addi $s2, $s2, 1 #Sumo uno al contador para seguir iterando, es como en un while.
 	
 
