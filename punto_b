@@ -1,8 +1,8 @@
-#Encontrar la posición del valor máximo en el arreglo .
+#Encontrar la posiciÃ³n del valor mÃ¡ximo en el arreglo .
 .data 
 	arreglo: .word 57, 102, 209, 64, 30, 147, 122, 215, 33, 78, 183, 97, 138, 62, 175, 40, 93, 117, 21, 9
 	contador: .word 0
-	tamaño_arreglo: .word 20
+	tamaÃ±o_arreglo: .word 20
 	arreglo_ordenado: .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	print_resultado: .asciiz "El valor maximo en el  arreglo es: "
 	print_posicion: .asciiz "La posicicion del valor maximo es: "
@@ -12,14 +12,16 @@
 	abrir_corchete: .asciiz "["
 	cerrar_corchete: .asciiz "]"
 	
-	abc: .asciiz "valor segundo arreglo "
+	abc: .asciiz "El arreglo ordenado queda: "
+	
+	ordenar: .asciiz "ordenado es "
 		
 .text
 	la $s0, arreglo_ordenado
 	la $t1, arreglo
 	lw $s7, arreglo
-	lw $t2, tamaño_arreglo
-	li $t8, 1
+	lw $t2, tamaÃ±o_arreglo
+	li $t8, 19
 	li $t9, 0
 	
 	
@@ -27,14 +29,14 @@
 			
 			encontrar:
 			#busca en la array
-				bge $s2, $t2, guardar #Si el contador es igual o mayor al tamaño del arreglo detengo el bucle
+				bge $s2, $t2, guardar #Si el contador es igual o mayor al tamaÃ±o del arreglo detengo el bucle
 				lw $s5, ($t1)                                  
 				ble $s5, $s1, aumento #Si el valor de A[contador] es menor aumenta sin cambiar
 			
 			cambiar:
 			#si es mayor cambia el temporal
-				move $s1, $s5 #Muevo el A[contador] a la variable donde está el elemento mas grande.
-				move $t4, $s2 #guardo la posición del índice actual menos uno.
+				move $s1, $s5 #Muevo el A[contador] a la variable donde estÃ¡ el elemento mas grande.
+				move $t4, $s2 #guardo la posiciÃ³n del Ã­ndice actual menos uno.
 			
 			aumento:
 			#aumenta el contador y avanza en la array
@@ -47,7 +49,24 @@
 			
 			guardar:
 			#encontrado se guarda en la 2da array y avanzo
-				sw $s1, 0($s0) 		
+				sw $s1, 0($s0) 	
+				
+				li $v0, 4
+				la $a0, ordenar
+				syscall
+				
+				li $v0, 1
+				lw $a0, 0($s0) 
+				syscall	
+				
+				li $v0, 4
+				la $a0, nueva_linea
+				syscall
+				
+				li $v0, 4
+				la $a0, nueva_linea
+				syscall
+							
 				addi $s0, $s0, 4			
 				
 				
@@ -89,11 +108,7 @@
 				sub $t1, $t1, $t4
 				
 			mostrar_arreglo:	
-				mul $t4, $t2, 4
-				sub $s0, $s0, $t4
-				
-				
-				
+					
 				
 				
 				# Imprimir el primer corchete
@@ -102,12 +117,12 @@
 				syscall
 
 				# Iterar sobre el arreglo
-				li $t3, 0  # Reiniciar el contador de posición del arreglo
+				li $t3, 0  # Reiniciar el contador de posiciÃ³n del arreglo
 				li $t4, 0  # Reiniciar el flag para imprimir coma
-				li $t5, 4  # Tamaño de una palabra en bytes
+				li $t5, 4  # TamaÃ±o de una palabra en bytes
 
 			iterar_arreglo:
-				# Calcular la dirección del elemento actual del arreglo
+				# Calcular la direcciÃ³n del elemento actual del arreglo
 				mul $t6, $t3, $t5
 				add $t7, $t1, $t6
 
@@ -116,11 +131,11 @@
 				li $v0, 1
 				syscall
 
-				# Imprimir coma si no es el último elemento
+				# Imprimir coma si no es el Ãºltimo elemento
 				addi $t3, $t3, 1
 				bne $t3, $t2, imprimir_coma
 
-				# Imprimir el último corchete y saltar al finalizar
+				# Imprimir el Ãºltimo corchete y saltar al finalizar
 				li $v0, 4
 				la $a0, cerrar_corchete
 				syscall
@@ -137,8 +152,7 @@
 				syscall
 
 				j iterar_arreglo
-				
-				
+	
 			
 				
 				
@@ -150,24 +164,49 @@
 			li $t4, 0
 			add $t9, $t9, 1
 			move $s1, $s5
-			ble $t9, $t8, mayor
-			
+			ble $t9, $t8, mayor	
 	
+	mostrar_ordenado:
+	
+		li $t3, 0
+		li $t4, 0 
+		li $t5, 4
+		subi $s0, $s0, 80
+		
+		li $v0, 4
+		la $a0, abc
+		syscall
+		
+		li $v0, 4
+		la $a0, nueva_linea
+		syscall
+		
+		ordenado:
+			mul $t6, $t3, $t5
+			add $t7, $s0, $t6
 			
-					
+			lw $a0, ($t7)
+			li $v0, 1
+			syscall
+		
+		  	addi $t3, $t3, 1
+			bne $t3, $t2, comaas
+			
+			li $v0, 4
+			la $a0, cerrar_corchete
+			syscall
+			
+			j fin_mostrar_arreglo
+		
+		comaas:
+			li $v0, 4
+			la $a0, coma
+			syscall
 
-	
+			j ordenado
 		
-				
 	
-		
-		
-			
-			
-	
-			
-			
-			
-			
-			
+		fin_mostrar_arreglo:
+   		li $v0, 10
+   		syscall #Fin del programa
 			
