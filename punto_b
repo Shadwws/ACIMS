@@ -1,25 +1,23 @@
-#Encontrar la posiciÃ³n del valor mÃ¡ximo en el arreglo .
 .data 
 	arreglo: .word 12, 255, 200, 150, 50, 33, 133, 100, 17, 15, 33, 188, 4, 10, 12, 40, 201, 7, 9, 10
+	original: .word 12, 255, 200, 150, 50, 33, 133, 100, 17, 15, 33, 188, 4, 10, 12, 40, 201, 7, 9, 10
 	contador: .word 0
 	tamano_arreglo: .word 20
 	arreglo_ordenado: .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	print_resultado: .asciiz "El valor maximo en el  arreglo es: "
 	print_posicion: .asciiz "La posicicion del valor maximo es: "
-	print_arreglo: .asciiz "El arreglo utilizado es el siguiente: "
+	print_arreglo: .asciiz "El arreglo original es el siguiente: "
 	nueva_linea: .asciiz "\n"
 	coma: .asciiz ", "
 	abrir_corchete: .asciiz "["
 	cerrar_corchete: .asciiz "]"
 	
 	abc: .asciiz "El arreglo ordenado queda: "
-	
-	ordenar: .asciiz "ordenado es "
 		
 .text
 	la $s0, arreglo_ordenado
 	la $t1, arreglo
-	lw $s7, arreglo
+	la $s7, original
 	lw $t2, tamano_arreglo
 	li $t8, 19
 	li $t9, 0
@@ -49,24 +47,7 @@
 			
 			guardar:
 			#encontrado se guarda en la 2da array y avanzo
-				sw $s1, 0($s0) 	
-				
-				li $v0, 4
-				la $a0, ordenar
-				syscall
-				
-				li $v0, 1
-				lw $a0, 0($s0) 
-				syscall	
-				
-				li $v0, 4
-				la $a0, nueva_linea
-				syscall
-				
-				li $v0, 4
-				la $a0, nueva_linea
-				syscall
-							
+				sw $s1, 0($s0) 			
 				addi $s0, $s0, 4			
 				
 				
@@ -107,51 +88,7 @@
 				lw $s5, ($t1)
 				sub $t1, $t1, $t4
 				
-			mostrar_arreglo:	
-					
-				
-				
-				# Imprimir el primer corchete
-				li $v0, 4
-				la $a0, abrir_corchete
-				syscall
-
-				# Iterar sobre el arreglo
-				li $t3, 0  # Reiniciar el contador de posiciÃ³n del arreglo
-				li $t4, 0  # Reiniciar el flag para imprimir coma
-				li $t5, 4  # TamaÃ±o de una palabra en bytes
-
-			iterar_arreglo:
-				# Calcular la direcciÃ³n del elemento actual del arreglo
-				mul $t6, $t3, $t5
-				add $t7, $t1, $t6
-
-				# Cargar el elemento actual del arreglo
-				lw $a0, ($t7)
-				li $v0, 1
-				syscall
-
-				# Imprimir coma si no es el Ãºltimo elemento
-				addi $t3, $t3, 1
-				bne $t3, $t2, imprimir_coma
-
-				# Imprimir el Ãºltimo corchete y saltar al finalizar
-				li $v0, 4
-				la $a0, cerrar_corchete
-				syscall
-				
-				li $v0, 4
-				la $a0, nueva_linea
-				syscall
-				
-				j reinicio
-
-			imprimir_coma:
-				li $v0, 4
-				la $a0, coma
-				syscall
-
-				j iterar_arreglo
+			
 	
 			
 				
@@ -164,7 +101,9 @@
 			li $t4, 0
 			add $t9, $t9, 1
 			move $s1, $s5
-			ble $t9, $t8, mayor	
+			ble $t9, $t8, mayor
+			
+				
 	
 	mostrar_ordenado:
 	
@@ -196,7 +135,11 @@
 			la $a0, cerrar_corchete
 			syscall
 			
-			j fin_mostrar_arreglo
+			li $v0, 4
+			la $a0, nueva_linea
+			syscall
+			
+			j mostrar_arreglo
 		
 		comaas:
 			li $v0, 4
@@ -204,7 +147,64 @@
 			syscall
 
 			j ordenado
+			
+			
+			
+			
 		
+	mostrar_arreglo:	
+				
+				li $v0, 4
+				la $a0, print_arreglo
+				syscall
+				
+				li $v0, 4
+				la $a0, nueva_linea
+				syscall
+				
+				
+				# Imprimir el primer corchete
+				li $v0, 4
+				la $a0, abrir_corchete
+				syscall
+
+				# Iterar sobre el arreglo
+				li $t3, 0  # Reiniciar el contador de posiciÃ³n del arreglo
+				li $t4, 0  # Reiniciar el flag para imprimir coma
+				li $t5, 4  # TamaÃ±o de una palabra en bytes
+
+			iterar_arreglo:
+				# Calcular la direcciÃ³n del elemento actual del arreglo
+				mul $t6, $t3, $t5
+				add $t7, $s7, $t6
+
+				# Cargar el elemento actual del arreglo
+				lw $a0, ($t7)
+				li $v0, 1
+				syscall
+
+				# Imprimir coma si no es el Ãºltimo elemento
+				addi $t3, $t3, 1
+				bne $t3, $t2, imprimir_coma
+
+				# Imprimir el Ãºltimo corchete y saltar al finalizar
+				li $v0, 4
+				la $a0, cerrar_corchete
+				syscall
+				
+				li $v0, 4
+				la $a0, nueva_linea
+				syscall
+				
+				j fin_mostrar_arreglo
+
+			imprimir_coma:
+				li $v0, 4
+				la $a0, coma
+				syscall
+
+				j iterar_arreglo	
+	
 	
 		fin_mostrar_arreglo:
    		li $v0, 10
